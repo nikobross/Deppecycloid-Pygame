@@ -6,10 +6,13 @@ from wheel import Wheel
 from backdrop import Backdrop
 from powerups import Powerups
 import time
+import config
 
 
-window_width = 1400
-window_height = 800
+
+window_width = config.window_width
+window_height = config.window_height
+ground_height = config.ground_height
 
 score1 = 0
 score2 = 0
@@ -120,7 +123,7 @@ def game_over_check():
                     elif event.key == pygame.K_q:  # Press Q to quit
                         pygame.quit()
                         sys.exit()
-                        
+                
                 end_screen_background = pygame.Surface((window_width, window_height))
                 end_screen_background.fill((173, 216, 230))  # RGB color for blue
 
@@ -137,6 +140,9 @@ def game_over_check():
                 
                 text_position = ((window_width - end_screen_text.get_width()) // 2, (window_height - end_screen_text.get_height()) // 2)
 
+                player1.clear_powerups()
+                player2.clear_powerups()
+
                 # Draw the text onto the screen
                 window.blit(end_screen_text, text_position)
 
@@ -152,7 +158,7 @@ def clear_powerups(player1, player2):
 
 pygame.init()
 clock = pygame.time.Clock()
-window = pygame.display.set_mode((window_width, window_height))
+window = pygame.display.set_mode((window_width, window_height), pygame.FULLSCREEN)
 caption = pygame.display.set_caption("Deppecyloid")
 font_small = pygame.font.Font(None, 36)
 font_big = pygame.font.Font(None, 100)
@@ -213,28 +219,37 @@ while True:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_LEFT]:
-        player1.move_left()
+        player2.move_left()
     if keys[pygame.K_RIGHT]:
-        player1.move_right()
+        player2.move_right()
     if keys[pygame.K_DOWN]:
-        player1.ground_pound()
+        player2.ground_pound()
 
     if keys[pygame.K_a]:
-        player2.move_left()
+        player1.move_left()
     if keys[pygame.K_d]:
-        player2.move_right()
+        player1.move_right()
     if keys[pygame.K_s]:
-        player2.ground_pound()
+        player1.ground_pound()
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                window_width = config.window_width = config.window_width / 2
+                window_height = config.window_height = config.window_height / 2
+                ground_height = config.ground_height = int(config.window_height * 0.2)
+                window = pygame.display.set_mode((config.window_width, config.window_height))
+                backdrop.change_background_size(config.window_width, config.window_height)
+                player1.change_size(window_width, window_height)
+                player2.change_size(window_width, window_height)
+        
             if event.key == pygame.K_UP:
-                player1.jump()
-            if event.key == pygame.K_w:
                 player2.jump()
+            if event.key == pygame.K_w:
+                player1.jump()
 
     pygame.display.flip()
     clock.tick(60)

@@ -2,10 +2,8 @@ import pygame
 import sys
 import math
 import random
+import config
 
-window_width = 1400
-window_height = 800
-ground_height = int(window_height * 0.1)
 
 
 class Wheel(pygame.sprite.Sprite):
@@ -16,7 +14,7 @@ class Wheel(pygame.sprite.Sprite):
         if skin == "BeachBall":
             self.original_image = pygame.image.load('BeachBallSpike.png')
         
-        self.radius = int(min(window_width, window_height) * 0.05)
+        self.radius = int(min(config.window_width, config.window_height) * 0.05)
         self.original_image = pygame.transform.scale(self.original_image, (int(self.radius*5.6), int(self.radius*5.6)))
         
         self.image = self.original_image.copy()
@@ -24,7 +22,7 @@ class Wheel(pygame.sprite.Sprite):
         self.rect.x = 0
         self.rect.y = 0
         
-        self.x_velocity = int(window_width * 0.012)
+        self.x_velocity = int(config.window_width * 0.012)
         self.rotation_velocity = 6
 
         self.circle_x = self.radius
@@ -59,7 +57,7 @@ class Wheel(pygame.sprite.Sprite):
 
         for powerup in self.active_powerups:
             if powerup == 'speed':
-                self.x_velocity = 1.5 * int(window_width * 0.012)
+                self.x_velocity = 1.5 * int(config.window_width * 0.012)
             if powerup == 'jump':
                 self.max_jumps = 2
 
@@ -74,8 +72,8 @@ class Wheel(pygame.sprite.Sprite):
         self.circle_y += self.circle_dy
 
     def check_ground(self):
-        if self.circle_y + self.radius*2 > window_height - ground_height:
-            self.circle_y = window_height - self.radius*2 - ground_height
+        if self.circle_y + self.radius*2 > config.window_height - config.ground_height:
+            self.circle_y = config.window_height - self.radius*2 - config.ground_height
             self.circle_dy = 0
             self.jumping = False
             self.ground_pounding = False
@@ -85,12 +83,12 @@ class Wheel(pygame.sprite.Sprite):
         self.circle_x -= self.x_velocity
         self.rotate(self.rotation_velocity)
         if self.circle_x + self.radius*2 < 0:
-            self.circle_x = window_width - self.radius*2
+            self.circle_x = config.window_width - self.radius*2
     
     def move_right(self):
         self.circle_x += self.x_velocity
         self.rotate(-self.rotation_velocity)
-        if self.circle_x - self.radius*2 > window_width:
+        if self.circle_x - self.radius*2 > config.window_width:
             self.circle_x = 0
 
     def set(self, x , y):
@@ -139,4 +137,10 @@ class Wheel(pygame.sprite.Sprite):
         self.active_powerups = []
         self.jumps_remaining = 1
         self.max_jumps = 1
-        self.x_velocity = int(window_width * 0.012)
+        self.x_velocity = int(config.window_width * 0.012)
+
+    def change_size(self, width, height):
+        self.radius = int(min(width, height) * 0.05)
+        self.original_image = pygame.transform.scale(self.original_image, (int(self.radius*5.6), int(self.radius*5.6)))
+
+
