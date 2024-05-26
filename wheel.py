@@ -21,6 +21,8 @@ class Wheel(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 0
         self.rect.y = 0
+
+        self.health = 500
         
         self.x_velocity = int(config.window_width * 0.012)
         self.rotation_velocity = 6
@@ -41,12 +43,21 @@ class Wheel(pygame.sprite.Sprite):
 
         self.active_powerups = []
 
+        self.double_spike = False
+
         self.angle_rad = math.radians(self.angle) + math.pi / 2
+        self.angle_rad2 = math.radians(self.angle) - math.pi / 2
 
         self.ground_pounding = False
 
         self.spike_x = self.circle_x + self.radius * math.cos(self.angle_rad) * 2.6
         self.spike_y = self.circle_y - self.radius * math.sin(self.angle_rad) * 2.6
+
+        self.spike_x2 = self.circle_x + self.radius * math.cos(self.angle_rad2) * 2.6
+        self.spike_y2 = self.circle_y - self.radius * math.sin(self.angle_rad2) * 2.6
+
+        self.spikes_on_screen = [(self.spike_x, self.spike_y)]
+
         self.spike_width = 5
 
     def rotate(self, angle):
@@ -61,12 +72,15 @@ class Wheel(pygame.sprite.Sprite):
                 self.rotation_velocity = 9
             if powerup == 'jump':
                 self.max_jumps = 2
+            if powerup == 'spike':
+                self.double_spike = True
 
-        self.move_spike()
+        self.move_spikes()
         self.rect = self.image.get_rect(center = (self.circle_x, self.circle_y))
         window.blit(self.image, self.rect.topleft)
 
-        #pygame.draw.line(window, (0, 0, 0), (self.circle_x, self.circle_y), (self.spike_x, self.spike_y), self.spike_width)
+        # pygame.draw.line(window, (0, 0, 0), (self.circle_x, self.circle_y), (self.spike_x, self.spike_y), self.spike_width)
+        # pygame.draw.line(window, (0, 0, 0), (self.circle_x, self.circle_y), (self.spike_x2, self.spike_y2), self.spike_width)
 
     def apply_gravity(self):
         self.circle_dy += self.gravity
@@ -99,12 +113,23 @@ class Wheel(pygame.sprite.Sprite):
         # self.image = pygame.transform.rotate(self.original_image, self.angle)
         # self.rect = self.image.get_rect(center=self.rect.center)
 
-    def move_spike(self):
+    def move_spikes(self):
 
         self.angle_rad = math.radians(self.angle) + math.pi / 2
 
         self.spike_x = self.circle_x + self.radius * math.cos(self.angle_rad) * 2.6
         self.spike_y = self.circle_y - self.radius * math.sin(self.angle_rad) * 2.6
+
+        if self.double_spike:
+            self.angle_rad2 = math.radians(self.angle) - math.pi / 2
+
+            self.spike_x2 = self.circle_x + self.radius * math.cos(self.angle_rad2) * 2.6
+            self.spike_y2 = self.circle_y - self.radius * math.sin(self.angle_rad2) * 2.6
+
+            self.spikes_on_screen = [(self.spike_x, self.spike_y), (self.spike_x2, self.spike_y2)]
+
+        else:
+            self.spikes_on_screen = [(self.spike_x, self.spike_y)]
 
     def jump(self):
         if self.jumps_remaining > 0:
@@ -140,9 +165,23 @@ class Wheel(pygame.sprite.Sprite):
         self.max_jumps = 1
         self.x_velocity = int(config.window_width * 0.012)
         self.rotation_velocity = 6
+        self.double_spike = False
 
     def change_size(self, width, height):
         self.radius = int(min(width, height) * 0.05)
         self.original_image = pygame.transform.scale(self.original_image, (int(self.radius*5.6), int(self.radius*5.6)))
+
+    def move_spike2(self):
+        self.angle_rad2 = math.radians(self.angle) - math.pi / 2
+
+        self.spike_x2 = self.circle_x + self.radius * math.cos(self.angle_rad2) * 2.6
+        self.spike_y2 = self.circle_y - self.radius * math.sin(self.angle_rad2) * 2.6
+
+    def got_hit(self):
+        self.health -= 50
+
+    def reset_health(self):
+        self.health = 500
+
 
 

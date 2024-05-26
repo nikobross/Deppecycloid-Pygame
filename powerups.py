@@ -3,7 +3,7 @@ import sys
 import math
 import random
 
-powerups = ['speed', 'jump']
+powerups = ['speed', 'jump', 'spike']
 
 
 class Powerups:
@@ -20,8 +20,8 @@ class Powerups:
             self.image = pygame.image.load('DoubleJump.png')
         # if self.type == 'shield':
         #     self.image = pygame.image.load('Shield.png')
-        # if self.type == 'spike':
-        #     self.image = pygame.image.load('Spike.png')
+        if self.type == 'spike':
+            self.image = pygame.image.load('Spike.png')
 
         self.image = pygame.transform.scale(self.image, (120, 120))
 

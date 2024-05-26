@@ -14,9 +14,6 @@ window_width = config.window_width
 window_height = config.window_height
 ground_height = config.ground_height
 
-health1 = 500
-health2 = 500
-
 max_health = 500
 
 powerups_to_draw = []
@@ -56,8 +53,8 @@ def check_player_collisions(player1, player2):
 
 def check_player_spike_collisions(player1, player2):
 
-    global health1
-    global health2
+    # global health1
+    # global health2
     global add_powerup
 
     rad1 = player1.radius
@@ -86,25 +83,47 @@ def check_player_spike_collisions(player1, player2):
     if distance1 < rad1 * 2:
         reset_players()
         add_powerup = True
-        health2 -= 50
+        player2.got_hit()
 
     if distance2 < rad2 * 2:
         reset_players()
         add_powerup = True
-        health1 -= 50
+        player1.got_hit()
+
+def check_player_spike_collisions_remake(player1, player2):
+
+    global add_powerup
+
+    player_pairs = [(player1, player2), (player2, player1)]
+
+    rad = player1.radius    
+
+    for player1, player2 in player_pairs:
+
+        x2 = player2.circle_x
+        y2 = player2.circle_y
+
+        for spike_pair in player1.spikes_on_screen:
+            spike_x = spike_pair[0]
+            spike_y = spike_pair[1]
+
+            dx = spike_x - x2
+            dy = spike_y - y2
+
+            distance = math.sqrt(dx * dx + dy * dy)
+
+            if distance < rad * 2:
+                reset_players()
+                add_powerup = True
+                player2.got_hit()
 
 def render_scores():
-    # score1_text = font_big.render(str(score1), True, (255, 255, 255))
-    # score2_text = font_big.render(str(score2), True, (255, 255, 255))
-
-    # window.blit(score1_text, (10, 10))
-    # window.blit(score2_text, (window_width - score2_text.get_width() - 10, 10))
 
     pygame.draw.rect(window, (0, 0, 0), (30, 10, max_health, 40))  # Health bar for player1
     pygame.draw.rect(window, (0, 0, 0), (window_width - max_health - 30, 10, max_health, 40))
 
-    pygame.draw.rect(window, (255, 255, 0), (40, 20, health1 - 20, 20))  # Health bar for player1
-    pygame.draw.rect(window, (255, 255, 0), (window_width - health2 - 20, 20, health2 - 20, 20))
+    pygame.draw.rect(window, (255, 255, 0), (40, 20, player1.health - 20, 20))  # Health bar for player1
+    pygame.draw.rect(window, (255, 255, 0), (window_width - player2.health - 20, 20, player2.health - 20, 20))
 
 def reset_players():
     player1.set(player1.radius, window_height // 2)
@@ -112,10 +131,7 @@ def reset_players():
 
 def game_over_check():
 
-    global health1
-    global health2
-
-    if health1 <= 0 or health2 <= 0:
+    if player1.health <= 0 or player2.health <= 0:
         restart_game = False
         powerups_to_draw.clear()
         while True:
@@ -128,8 +144,8 @@ def game_over_check():
                         pygame.quit()
                         sys.exit()
                     if event.key == pygame.K_r:
-                        health1 = 500
-                        health2 = 500
+                        player1.reset_health()
+                        player2.reset_health()
                         restart_game = True
                         break
                     elif event.key == pygame.K_q:
@@ -145,11 +161,11 @@ def game_over_check():
 
                 window.blit(end_screen_background, (square_x, square_y))
 
-                if health1 <= 0 and health2 <= 0:
+                if player1.health <= 0 and player2.health <= 0:
                     end_screen_message = "It's a tie! Press R to restart or Q to quit."
-                elif health1 <= 0:
+                elif player1.health <= 0:
                     end_screen_message = "Player 2 wins! Press R to restart or Q to quit."
-                elif health2 <= 0:
+                elif player2.health <= 0:
                     end_screen_message = "Player 1 wins! Press R to restart or Q to quit."
                     
                 end_screen_text = font_small.render(end_screen_message, True, (255, 255, 255))
@@ -201,7 +217,7 @@ while True:
 
     check_player_collisions(player1, player2)
 
-    check_player_spike_collisions(player1, player2)
+    check_player_spike_collisions_remake(player1, player2)
 
     for powerup in powerups_to_draw:
         powerup.render(window)
@@ -221,7 +237,7 @@ while True:
     player2.render(window)
 
 
-    if (health1 + health2) % 3 == 0 and (health1 + health2) != 500:
+    if (player1.health + player2.health) % 3 == 0 and (player1.health + player2.health) != 500:
         if not powerup_on_screen and add_powerup:
             clear_powerups(player1, player2)
             powerup1 = Powerups()
