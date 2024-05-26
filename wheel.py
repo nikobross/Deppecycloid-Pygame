@@ -58,6 +58,7 @@ class Wheel(pygame.sprite.Sprite):
         for powerup in self.active_powerups:
             if powerup == 'speed':
                 self.x_velocity = 1.5 * int(config.window_width * 0.012)
+                self.rotation_velocity = 9
             if powerup == 'jump':
                 self.max_jumps = 2
 
@@ -127,7 +128,7 @@ class Wheel(pygame.sprite.Sprite):
 
         if powerup_name == 'jump':
             self.jumps_remaining = 1
-
+            
     def ground_pound(self):
         if not self.ground_pounding:
             self.circle_dy = 50
@@ -138,6 +139,7 @@ class Wheel(pygame.sprite.Sprite):
         self.jumps_remaining = 1
         self.max_jumps = 1
         self.x_velocity = int(config.window_width * 0.012)
+        self.rotation_velocity = 6
 
     def change_size(self, width, height):
         self.radius = int(min(width, height) * 0.05)
