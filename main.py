@@ -1,11 +1,9 @@
 import pygame
 import sys
 import math
-import random
 from wheel import Wheel
 from backdrop import Backdrop
 from powerups import Powerups
-import time
 import config
 
 
@@ -81,14 +79,16 @@ def check_player_spike_collisions(player1, player2):
     distance2 = math.sqrt(dx2 * dx2 + dy2 * dy2)
 
     if distance1 < rad1 * 2:
-        reset_players()
+        
         add_powerup = True
         player2.got_hit()
+        reset_players()
 
     if distance2 < rad2 * 2:
-        reset_players()
+        
         add_powerup = True
         player1.got_hit()
+        reset_players()
 
 def check_player_spike_collisions_remake(player1, player2):
 
@@ -126,8 +126,8 @@ def render_scores():
     pygame.draw.rect(window, (255, 255, 0), (window_width - player2.health - 20, 20, player2.health - 20, 20))
 
 def reset_players():
-    player1.set(player1.radius, window_height // 2)
-    player2.set(window_width - player2.radius, window_height // 2)
+    player1.set(player1.radius * 8, window_height / 4)
+    player2.set(window_width - player2.radius * 8, window_height / 4)
 
 def game_over_check():
 
@@ -199,10 +199,11 @@ font_big = pygame.font.Font(None, 100)
 backdrop = Backdrop("blue_sky")
 
 player1 = Wheel("Bike")
-player1.set(player1.radius, window_height // 2)
 
 player2 = Wheel("BeachBall")
-player2.set(window_width - player2.radius, window_height // 2)
+
+reset_players()
+
 
 while True:
 

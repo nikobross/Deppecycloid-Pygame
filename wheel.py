@@ -11,11 +11,17 @@ class Wheel(pygame.sprite.Sprite):
         super().__init__()
         if skin == "Bike":
             self.original_image = pygame.image.load('BikeWheelSpike.png')
+            self.double_spike_image_original = pygame.image.load('BikeWheelDoubleSpike.png')
         if skin == "BeachBall":
             self.original_image = pygame.image.load('BeachBallSpike.png')
+            self.double_spike_image_original = pygame.image.load('BeachBallDoubleSpike.png')
         
         self.radius = int(min(config.window_width, config.window_height) * 0.05)
         self.original_image = pygame.transform.scale(self.original_image, (int(self.radius*5.6), int(self.radius*5.6)))
+        self.double_spike_image_original = pygame.transform.scale(self.double_spike_image_original, (int(self.radius*5.6), int(self.radius*5.6)))
+        self.original_original_image = self.original_image.copy()
+        
+        self.double_spike_image = self.double_spike_image_original.copy()
         
         self.image = self.original_image.copy()
         self.rect = self.image.get_rect()
@@ -153,6 +159,10 @@ class Wheel(pygame.sprite.Sprite):
 
         if powerup_name == 'jump':
             self.jumps_remaining = 1
+        if powerup_name == 'spike':
+            print('got spike')
+            self.image = self.double_spike_image.copy()
+            self.original_image = self.double_spike_image_original.copy()
             
     def ground_pound(self):
         if not self.ground_pounding:
@@ -166,6 +176,8 @@ class Wheel(pygame.sprite.Sprite):
         self.x_velocity = int(config.window_width * 0.012)
         self.rotation_velocity = 6
         self.double_spike = False
+        self.original_image = self.original_original_image.copy()
+        self.image = self.original_image.copy()
 
     def change_size(self, width, height):
         self.radius = int(min(width, height) * 0.05)
