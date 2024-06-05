@@ -1,3 +1,4 @@
+from itertools import groupby
 import pygame
 import sys
 import math
@@ -66,6 +67,8 @@ class Wheel(pygame.sprite.Sprite):
 
         self.spike_width = 5
 
+        self.spike_path = []
+
     def rotate(self, angle):
         self.angle += angle
         self.image = pygame.transform.rotate(self.original_image, self.angle)
@@ -84,6 +87,11 @@ class Wheel(pygame.sprite.Sprite):
         self.move_spikes()
         self.rect = self.image.get_rect(center = (self.circle_x, self.circle_y))
         window.blit(self.image, self.rect.topleft)
+
+        # path_segments = [list(g) for k, g in groupby(self.spike_path, lambda x: x is None) if not k]
+        # for segment in path_segments:
+        #     if len(segment) > 1:
+        #         pygame.draw.lines(window, (0, 0, 0), False, segment, self.spike_width)
 
         # pygame.draw.line(window, (0, 0, 0), (self.circle_x, self.circle_y), (self.spike_x, self.spike_y), self.spike_width)
         # pygame.draw.line(window, (0, 0, 0), (self.circle_x, self.circle_y), (self.spike_x2, self.spike_y2), self.spike_width)
@@ -111,6 +119,8 @@ class Wheel(pygame.sprite.Sprite):
         self.rotate(-self.rotation_velocity)
         if self.circle_x - self.radius*2 > config.window_width:
             self.circle_x = 0
+            return True
+        return False
 
     def set(self, x , y):
         self.circle_x = x
@@ -120,11 +130,20 @@ class Wheel(pygame.sprite.Sprite):
         # self.rect = self.image.get_rect(center=self.rect.center)
 
     def move_spikes(self):
-
         self.angle_rad = math.radians(self.angle) + math.pi / 2
 
-        self.spike_x = self.circle_x + self.radius * math.cos(self.angle_rad) * 2.6
-        self.spike_y = self.circle_y - self.radius * math.sin(self.angle_rad) * 2.6
+        new_spike_x = self.circle_x + self.radius * math.cos(self.angle_rad) * 2.6
+        new_spike_y = self.circle_y - self.radius * math.sin(self.angle_rad) * 2.6
+
+        # Check if the wheel has crossed the screen boundary
+        # if self.spike_path and abs(new_spike_x - self.spike_path[-1][0]) > self.radius:
+        #     # If it has, start a new line segment for the path
+        #     self.spike_path.append(None)
+
+        self.spike_x = new_spike_x
+        self.spike_y = new_spike_y
+
+        self.spike_path.append((self.spike_x, self.spike_y))
 
         if self.double_spike:
             self.angle_rad2 = math.radians(self.angle) - math.pi / 2
@@ -160,7 +179,6 @@ class Wheel(pygame.sprite.Sprite):
         if powerup_name == 'jump':
             self.jumps_remaining = 1
         if powerup_name == 'spike':
-            print('got spike')
             self.image = self.double_spike_image.copy()
             self.original_image = self.double_spike_image_original.copy()
             

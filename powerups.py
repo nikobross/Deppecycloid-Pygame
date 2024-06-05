@@ -18,8 +18,6 @@ class Powerups:
             self.image = pygame.image.load('Speed.png')
         if self.type == 'jump':
             self.image = pygame.image.load('DoubleJump.png')
-        # if self.type == 'shield':
-        #     self.image = pygame.image.load('Shield.png')
         if self.type == 'spike':
             self.image = pygame.image.load('Spike.png')
 
