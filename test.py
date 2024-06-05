@@ -1,24 +1,16 @@
-class Car:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+import pygame
 
-        self.list = [self.x, self.y]
-    
-    def change_xy(self, x, y):
-        self.x = x
-        self.y = y
+# Initialize Pygame
+pygame.init()
 
-    def __str__ (self):
-        string = str(self.x) + " " + str(self.y)
-        return string
+# Get screen resolution
+infoObject = pygame.display.Info()
+
+window_width = infoObject.current_w
+window_height = int(infoObject.current_h * 0.8)  # Set window height to 80% of screen height
+ground_height = int(window_height * 0.2)
 
 
-
-car1 = Car(10, 10)
-
-car1.change_xy(20, 20)
-
-print(car1.list)
-
-print(car1.x, car1.y)
+print("window_width:", window_width)
+print("window_height:", window_height)
+print("ground_height:", ground_height)

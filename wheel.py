@@ -125,6 +125,12 @@ class Wheel(pygame.sprite.Sprite):
     def set(self, x , y):
         self.circle_x = x
         self.circle_y = y
+
+        self.spike_x = self.circle_x + self.radius * math.cos(0) * 2.6
+        self.spike_y = self.circle_y - self.radius * math.sin(0) * 2.6
+
+        self.spike_x2 = self.circle_x + self.radius * math.cos(0) * 2.6
+        self.spike_y2 = self.circle_y - self.radius * math.sin(0) * 2.6
         # self.angle = 0
         # self.image = pygame.transform.rotate(self.original_image, self.angle)
         # self.rect = self.image.get_rect(center=self.rect.center)
